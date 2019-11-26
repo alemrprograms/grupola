@@ -397,7 +397,7 @@
     }
     gutentorShowMoreBlock('.gutentor-show-more-button');
     gutentorShowMoreBlock('.gutentor-show-less-action-button');
-    
+
 
     $(window).load(function(){
         //Gutentor filter Box

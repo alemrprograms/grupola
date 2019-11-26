@@ -44,11 +44,11 @@ if(!function_exists('gutentor_blog_post_template1')){
         $output .= '<div class="gutentor-post-content">';
             if ($attributes['blockSingleItemTitleEnable']) {
                 $title_tag = $attributes['blockSingleItemTitleTag'];
-                $output .= '<a href="' . esc_url(get_permalink()) . '" rel="bookmark">';
-                $output .= '<'.$title_tag.' class="gutentor-single-item-title">';
-                $output .= get_the_title();
-                $output .= '</'.$title_tag.'>';
-                $output .= '</a>';
+	            $output .= '<'.$title_tag.' class="gutentor-single-item-title">';
+	            $output .= '<a href="' . esc_url(get_permalink()) . '" rel="bookmark">';
+	            $output .= get_the_title();
+	            $output .= '</a>';
+	            $output .= '</'.$title_tag.'>';
             }
             $output .= '<div class="entry-meta">';
                 if ($attributes['enablePostDate']) {
@@ -72,7 +72,7 @@ if(!function_exists('gutentor_blog_post_template1')){
             if ($attributes['excerptLength'] > 0 && $attributes['blockSingleItemDescriptionEnable']) {
                 $desc_tag = $attributes['blockSingleItemDescriptionTag'];
                 $output         .= '<div class="gutentor-post-excerpt gutentor-single-item-desc">';
-                $output         .= "<$desc_tag>" . gutentor_get_excerpt_by_id( $post->ID, $attributes['excerptLength'] ) . "</$desc_tag>";
+                $output         .= "<$desc_tag class='gutentor-single-item-desc'>" . gutentor_get_excerpt_by_id( $post->ID, $attributes['excerptLength'] ) . "</$desc_tag>";
                 $output         .= '</div>';
             }
             if ($attributes['blockSingleItemButtonEnable']) {

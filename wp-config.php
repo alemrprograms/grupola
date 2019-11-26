@@ -83,6 +83,7 @@ $table_prefix = 'wp_';
  * @link https://codex.wordpress.org/pt-br:Depura%C3%A7%C3%A3o_no_WordPress
  */
 define('WP_DEBUG', false);
+define( 'WP_MEMORY_LIMIT', '64M' );
 
 /* Isto é tudo, pode parar de editar! :) */
 

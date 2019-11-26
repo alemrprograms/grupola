@@ -471,6 +471,18 @@ class Gutentor_Hooks {
 			true // Enqueue the script in the footer.
 		);
 
+		/*CSS for default/popular themes*/
+		$templates = array('twentynineteen', "twentytwenty", "oceanwp", "astra");
+		$current_template =  get_template();
+		if (in_array($current_template, $templates)){
+		  	wp_enqueue_style(
+				'gutentor-theme-'.esc_attr($current_template), // Handle.
+				GUTENTOR_URL . '/dist/gutentor-'.esc_attr($current_template).'.css',
+				array(), // Dependency to include the CSS after it.
+				GUTENTOR_VERSION // Version: File modification time.
+			);
+		}
+
 	}
 
 	/**
@@ -489,7 +501,7 @@ class Gutentor_Hooks {
 		wp_enqueue_script(
 			'gutentor-js', // Handle.
 			GUTENTOR_URL . '/dist/blocks.build.js',//Block.build.js: We register the block here. Built with Webpack.
-			array('lodash', 'wp-api', 'wp-i18n', 'wp-blocks', 'wp-components', 'wp-compose', 'wp-data', 'wp-editor', 'wp-edit-post', 'wp-element', 'wp-keycodes', 'wp-plugins', 'wp-rich-text' ,'wp-viewport', ), // Dependencies, defined above.
+			array('jquery','lodash', 'wp-api', 'wp-i18n', 'wp-blocks', 'wp-components', 'wp-compose', 'wp-data', 'wp-editor', 'wp-edit-post', 'wp-element', 'wp-keycodes', 'wp-plugins', 'wp-rich-text' ,'wp-viewport', ), // Dependencies, defined above.
 			GUTENTOR_VERSION, // Version: File modification time.
 			true // Enqueue the script in the footer.
 		);
@@ -502,6 +514,8 @@ class Gutentor_Hooks {
 			'gutentorSvg' => GUTENTOR_URL.'assets/img/gutentor.svg',
 			'gutentorWhiteSvg' => GUTENTOR_URL.'assets/img/gutentor-white-logo.svg',
 			'fontAwesomeVersion' => gutentor_get_options('gutentor_font_awesome_version'),
+			'isGutentorTemplateLibraryActive' => is_plugin_active( GUTENTOR_RECOMMENDED_TEMPLATE_LIBRARY_PLUGIN ),
+            'nonce' => wp_create_nonce( 'gutentorNonce' )
 		) );
 
 		// Scripts.
@@ -884,7 +898,6 @@ class Gutentor_Hooks {
 
 		$block_list = array('gutentor/blog-post');
 		$block_list = apply_filters('gutentor_image_option_css_access_block',$block_list);
-
 		if(!in_array($attributes['gutentorBlockName'] , $block_list)){
 			return $data;
 		}
@@ -905,28 +918,42 @@ class Gutentor_Hooks {
                     '.gutentor_generate_css('background',($img_overlay_color_enable && $img_overlay_color_hover) ? $img_overlay_color_hover : null ) . '
             }';
 		$blockFullImageEnable      = (isset($attributes['blockFullImageEnable']) && $attributes['blockFullImageEnable']) ? $attributes['blockFullImageEnable'] : '';
-		if ($blockFullImageEnable) {
+		$blockSingleItemBoxPadding = (isset($attributes['blockSingleItemBoxPadding']) && $attributes['blockSingleItemBoxPadding']) ? $attributes['blockSingleItemBoxPadding'] : '';
+		$blockImageBoxMargin       = isset($attributes['blockImageBoxMargin']) ? $attributes['blockImageBoxMargin'] : '';
+		$blockImageBoxPadding      = isset($attributes['blockImageBoxPadding']) ? $attributes['blockImageBoxPadding'] : '';
+		if($blockFullImageEnable){
+				$local_dynamic_css['all'] .= '#section-' . $attributes['blockID'] . ' .gutentor-single-item .gutentor-single-item-image-box{
+	                '.GutentorBoxSingleDeviceNegativeSpacing( 'margin-top', $blockSingleItemBoxPadding, 'mobileTop' ). '
+	                '.GutentorBoxSingleDeviceNegativeSpacing( 'margin-right', $blockSingleItemBoxPadding, 'mobileRight' ). '
+	                '.GutentorBoxSingleDeviceNegativeSpacing( 'margin-left', $blockSingleItemBoxPadding, 'mobileLeft' ). '
+	            }';
 
-			$blockSingleItemBoxPadding = (isset($attributes['blockSingleItemBoxPadding']) && $attributes['blockSingleItemBoxPadding']) ? $attributes['blockSingleItemBoxPadding'] : '';
-			$local_dynamic_css['all'] .= '#section-' . $attributes['blockID'] . ' .gutentor-single-item .gutentor-single-item-image-box{
-                    '. GutentorBoxSingleDeviceNegativeSpacing( 'margin-top', $blockSingleItemBoxPadding, 'mobileTop' ). '
-                    '. GutentorBoxSingleDeviceNegativeSpacing( 'margin-right', $blockSingleItemBoxPadding, 'mobileRight' ). '
-                    '. GutentorBoxSingleDeviceNegativeSpacing( 'margin-left', $blockSingleItemBoxPadding, 'mobileLeft' ). '
-            }';
+				$local_dynamic_css['tablet'] .= '#section-' . $attributes['blockID'] . ' .gutentor-single-item .gutentor-single-item-image-box{
+	                '. GutentorBoxSingleDeviceNegativeSpacing( 'margin-top', $blockSingleItemBoxPadding, 'tabletTop' ). '
+	                '. GutentorBoxSingleDeviceNegativeSpacing( 'margin-right', $blockSingleItemBoxPadding, 'tabletRight' ). '
+	                '. GutentorBoxSingleDeviceNegativeSpacing( 'margin-left', $blockSingleItemBoxPadding, 'tabletLeft' ). '
+	            }';
 
-			$local_dynamic_css['tablet'] .= '#section-' . $attributes['blockID'] . ' .gutentor-single-item .gutentor-single-item-image-box{
-                    '. GutentorBoxSingleDeviceNegativeSpacing( 'margin-top', $blockSingleItemBoxPadding, 'tabletTop' ). '
-                    '. GutentorBoxSingleDeviceNegativeSpacing( 'margin-right', $blockSingleItemBoxPadding, 'tabletRight' ). '
-                    '. GutentorBoxSingleDeviceNegativeSpacing( 'margin-left', $blockSingleItemBoxPadding, 'tabletLeft' ). ' 
-            }';
-
-			$local_dynamic_css['desktop'] .= '#section-' . $attributes['blockID'] . ' .gutentor-single-item .gutentor-single-item-image-box{
-                    '. GutentorBoxSingleDeviceNegativeSpacing( 'margin-top', $blockSingleItemBoxPadding, 'desktopTop' ). '
-                    '. GutentorBoxSingleDeviceNegativeSpacing( 'margin-right', $blockSingleItemBoxPadding, 'desktopRight' ). '
-                    '. GutentorBoxSingleDeviceNegativeSpacing( 'margin-left', $blockSingleItemBoxPadding, 'desktopLeft' ). '
-            }';
-
+				$local_dynamic_css['desktop'] .= '#section-' . $attributes['blockID'] . ' .gutentor-single-item .gutentor-single-item-image-box{
+	                '. GutentorBoxSingleDeviceNegativeSpacing( 'margin-top', $blockSingleItemBoxPadding, 'desktopTop' ). '
+	                '. GutentorBoxSingleDeviceNegativeSpacing( 'margin-right', $blockSingleItemBoxPadding, 'desktopRight' ). '
+	                '. GutentorBoxSingleDeviceNegativeSpacing( 'margin-left', $blockSingleItemBoxPadding, 'desktopLeft' ). '
+	            }';
 		}
+		$local_dynamic_css['all'] .= '#section-' . $attributes['blockID'] . ' .gutentor-single-item .gutentor-single-item-image-box{
+                ' . gutentor_box_four_device_options_css('margin', $blockImageBoxMargin) . '
+                ' . gutentor_box_four_device_options_css('padding', $blockImageBoxPadding) . '
+        }';
+
+		$local_dynamic_css['tablet'] .= '#section-' . $attributes['blockID'] . ' .gutentor-single-item .gutentor-single-item-image-box{
+                ' . gutentor_box_four_device_options_css('margin', $blockImageBoxMargin, 'tablet') . '
+                ' . gutentor_box_four_device_options_css('padding', $blockImageBoxPadding, 'tablet') . ' 
+        }';
+
+		$local_dynamic_css['desktop'] .= '#section-' . $attributes['blockID'] . ' .gutentor-single-item .gutentor-single-item-image-box{
+                ' . gutentor_box_four_device_options_css('margin', $blockImageBoxMargin, 'desktop') . '
+                ' . gutentor_box_four_device_options_css('padding', $blockImageBoxPadding, 'desktop') . '
+        }';
 		$output = array_merge_recursive($data, $local_dynamic_css);
 		return $output;
 	}
@@ -947,6 +974,9 @@ class Gutentor_Hooks {
 		$block_list = array('gutentor/blog-post');
 		$block_list = apply_filters('gutentor_repeater_style_access_block',$block_list);
 
+		$attr_default_val       = gutentor_block_base()->repeater_common_default_val();
+		$attributes             = wp_parse_args($attributes, $attr_default_val);
+
 		if(!in_array($attributes['gutentorBlockName'] , $block_list)){
 			return $data;
 		}
@@ -961,12 +991,11 @@ class Gutentor_Hooks {
 			$title_margin       = isset($attributes['blockSingleItemTitleMargin']) ? $attributes['blockSingleItemTitleMargin'] : '';
 			$title_padding      = isset($attributes['blockSingleItemTitlePadding']) ? $attributes['blockSingleItemTitlePadding'] : '';
 			$title_typography   = isset($attributes['blockSingleItemTitleTypography']) ? $attributes['blockSingleItemTitleTypography'] : '';
-
 			$local_dynamic_css['all'] .= '#section-' . $attributes['blockID'] . ' .gutentor-single-item .gutentor-single-item-title,
              #section-' . $attributes['blockID'] . ' .gutentor-single-item .gutentor-single-item-title a{
                      ' . gutentor_generate_css('color', ($title_color_enable && $attributes['blockSingleItemTitleColor']['normal']) ? $attributes['blockSingleItemTitleColor']['normal']['hex'] : null) . '
                      ' . gutentor_typography_options_css($title_typography) . '
-                     ' . gutentor_box_four_device_options_css('margin', $title_margin) . '
+                     ' . gutentor_box_four_device_options_css('margin', $title_margin). '
                      ' . gutentor_box_four_device_options_css('padding', $title_padding) . '
             }';
 
@@ -1038,7 +1067,6 @@ class Gutentor_Hooks {
 			$button_css                  = GutentorButtonCss($button);
 
         }
-
 		/* Single Item Box padding/margin */
 		$single_item_Box_margin  = isset($attributes['blockSingleItemBoxMargin']) ? $attributes['blockSingleItemBoxMargin'] : '';
 		$single_item_Box_padding = isset($attributes['blockSingleItemBoxPadding']) ? $attributes['blockSingleItemBoxPadding'] : '';

@@ -21,6 +21,30 @@ if ( ! class_exists( 'Gutentor_Block_Base' ) ) {
 		 */
 		private static $counter = 0;
 
+		/**
+		 * Gets an instance of this object.
+		 * Prevents duplicate instances which avoid artefacts and improves performance.
+		 *
+		 * @static
+		 * @access public
+		 * @since 1.0.1
+		 * @return object
+		 */
+		public static function get_base_instance() {
+
+			// Store the instance locally to avoid private static replication
+			static $instance = null;
+
+			// Only run these methods if they haven't been ran previously
+			if ( null === $instance ) {
+				$instance = new self();
+			}
+
+			// Always return the instance
+			return $instance;
+
+		}
+
 	    /**
 		 * Run Block
 		 *
@@ -1227,7 +1251,10 @@ if ( ! class_exists( 'Gutentor_Block_Base' ) ) {
 					'type' => 'object',
 					'default'=> array(
 						'enable' => 'false',
-						'hex' => '#111111',
+						'normal' => array(
+							'hex' => '#111111',
+						),
+						'hover' => '',
 					)
 				),
 				'blockSingleItemTitleTypography'           => array(
@@ -1312,7 +1339,8 @@ if ( ! class_exists( 'Gutentor_Block_Base' ) ) {
 					'type' => 'object',
 					'default'=> array(
 						'enable' => 'false',
-						'hex' => '#111111',
+						'normal' => '',
+						'hover' => '',
 					)
 				),
 				'blockSingleItemDescriptionTypography'           => array(
@@ -2017,5 +2045,18 @@ if ( ! class_exists( 'Gutentor_Block_Base' ) ) {
 
 			return array_merge_recursive($attr, $this->repeater_common_default_val() );
 		}
+	}
+}
+
+/**
+ * Return instance of  Gutentor_Block_Base class
+ *
+ * @since    1.0.0
+ */
+if( !function_exists( 'gutentor_block_base')){
+
+	function gutentor_block_base() {
+
+		return Gutentor_Block_Base::get_base_instance();
 	}
 }

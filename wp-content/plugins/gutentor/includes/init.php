@@ -179,10 +179,13 @@ class Gutentor {
 		require_once GUTENTOR_PATH . 'includes/blocks/class-icon-box.php';
 		require_once GUTENTOR_PATH . 'includes/blocks/class-image-box.php';
 		require_once GUTENTOR_PATH . 'includes/blocks/class-image-slider.php';
+		require_once GUTENTOR_PATH . 'includes/blocks/class-list.php';
+		require_once GUTENTOR_PATH . 'includes/blocks/class-notification.php';
 		require_once GUTENTOR_PATH . 'includes/blocks/class-opening-hours.php';
 		require_once GUTENTOR_PATH . 'includes/blocks/class-pricing.php';
 		require_once GUTENTOR_PATH . 'includes/blocks/class-progress-bar.php';
 		require_once GUTENTOR_PATH . 'includes/blocks/class-restaurant-menu.php';
+		require_once GUTENTOR_PATH . 'includes/blocks/class-show-more.php';
 		require_once GUTENTOR_PATH . 'includes/blocks/class-single-column.php';
 		require_once GUTENTOR_PATH . 'includes/blocks/class-social.php';
 		require_once GUTENTOR_PATH . 'includes/blocks/class-tabs.php';

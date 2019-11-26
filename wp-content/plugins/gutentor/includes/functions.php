@@ -262,22 +262,29 @@ if (!function_exists('gutentor_box_four_device_options_css')) {
         $type = isset($BoxFourDevices['type']) ? $BoxFourDevices['type'] : 'px';
         if ('desktop' === $device) {
 
-            $top    = (isset($BoxFourDevices['desktopTop']) && gutentor_not_empty($BoxFourDevices['desktopTop'])) ? $BoxFourDevices['desktopTop'] : 0;
-            $right  = (isset($BoxFourDevices['desktopRight']) && gutentor_not_empty($BoxFourDevices['desktopRight'])) ? $BoxFourDevices['desktopRight'] : 0;
-            $bottom = (isset($BoxFourDevices['desktopBottom']) && gutentor_not_empty($BoxFourDevices['desktopBottom'])) ? $BoxFourDevices['desktopBottom'] : 0;
-            $left   = (isset($BoxFourDevices['desktopLeft']) && gutentor_not_empty($BoxFourDevices['desktopLeft'])) ? $BoxFourDevices['desktopLeft'] : 0;
+            $top    = (isset($BoxFourDevices['desktopTop']) && gutentor_not_empty($BoxFourDevices['desktopTop'])) ? $BoxFourDevices['desktopTop'] : '';
+            $right  = (isset($BoxFourDevices['desktopRight']) && gutentor_not_empty($BoxFourDevices['desktopRight'])) ? $BoxFourDevices['desktopRight'] : '';
+            $bottom = (isset($BoxFourDevices['desktopBottom']) && gutentor_not_empty($BoxFourDevices['desktopBottom'])) ? $BoxFourDevices['desktopBottom'] : '';
+            $left   = (isset($BoxFourDevices['desktopLeft']) && gutentor_not_empty($BoxFourDevices['desktopLeft'])) ? $BoxFourDevices['desktopLeft'] : '';
         } else if ('tablet' === $device) {
-            $top    = (isset($BoxFourDevices['tabletTop']) && gutentor_not_empty($BoxFourDevices['tabletTop'])) ? $BoxFourDevices['tabletTop'] : 0;
-            $right  = (isset($BoxFourDevices['tabletRight']) && gutentor_not_empty($BoxFourDevices['tabletRight'])) ? $BoxFourDevices['tabletRight'] : 0;
-            $bottom = (isset($BoxFourDevices['tabletBottom']) && gutentor_not_empty($BoxFourDevices['tabletBottom'])) ? $BoxFourDevices['tabletBottom'] : 0;
-            $left   = (isset($BoxFourDevices['tabletLeft']) && gutentor_not_empty($BoxFourDevices['tabletLeft'])) ? $BoxFourDevices['tabletLeft'] : 0;
+            $top    = (isset($BoxFourDevices['tabletTop']) && gutentor_not_empty($BoxFourDevices['tabletTop'])) ? $BoxFourDevices['tabletTop'] : '';
+            $right  = (isset($BoxFourDevices['tabletRight']) && gutentor_not_empty($BoxFourDevices['tabletRight'])) ? $BoxFourDevices['tabletRight'] : '';
+            $bottom = (isset($BoxFourDevices['tabletBottom']) && gutentor_not_empty($BoxFourDevices['tabletBottom'])) ? $BoxFourDevices['tabletBottom'] : '';
+            $left   = (isset($BoxFourDevices['tabletLeft']) && gutentor_not_empty($BoxFourDevices['tabletLeft'])) ? $BoxFourDevices['tabletLeft'] : '';
         } else {
-            $top    = (isset($BoxFourDevices['mobileTop']) && gutentor_not_empty($BoxFourDevices['mobileTop'])) ? $BoxFourDevices['mobileTop'] : 0;
-            $right  = (isset($BoxFourDevices['mobileRight']) && gutentor_not_empty($BoxFourDevices['mobileRight'])) ? $BoxFourDevices['mobileRight'] : 0;
-            $bottom = (isset($BoxFourDevices['mobileBottom']) && gutentor_not_empty($BoxFourDevices['mobileBottom'])) ? $BoxFourDevices['mobileBottom'] : 0;
-            $left   = (isset($BoxFourDevices['mobileLeft'])) && gutentor_not_empty($BoxFourDevices['mobileLeft']) ? $BoxFourDevices['mobileLeft'] : 0;
+            $top    = (isset($BoxFourDevices['mobileTop']) && gutentor_not_empty($BoxFourDevices['mobileTop'])) ? $BoxFourDevices['mobileTop'] : '';
+            $right  = (isset($BoxFourDevices['mobileRight']) && gutentor_not_empty($BoxFourDevices['mobileRight'])) ? $BoxFourDevices['mobileRight'] : '';
+            $bottom = (isset($BoxFourDevices['mobileBottom']) && gutentor_not_empty($BoxFourDevices['mobileBottom'])) ? $BoxFourDevices['mobileBottom'] : '';
+            $left   = (isset($BoxFourDevices['mobileLeft'])) && gutentor_not_empty($BoxFourDevices['mobileLeft']) ? $BoxFourDevices['mobileLeft'] : '';
+
         }
-        $css = gutentor_generate_css($cssAttr, ($top || $right || $bottom || $left) ? $top . $type . ' ' . $right . $type . ' ' . $bottom . $type . ' ' . $left . $type : null);
+        if(gutentor_not_empty($top)  || gutentor_not_empty($right) || gutentor_not_empty($bottom) || gutentor_not_empty($left)) {
+	        $top    = ( $top ) ? $top : 0;
+	        $right  = ( $right ) ? $right : 0;
+	        $bottom = ( $bottom ) ? $bottom : 0;
+	        $left   = ( $left ) ? $left : 0;
+        }
+        $css = gutentor_generate_css($cssAttr, (gutentor_not_empty($top) || gutentor_not_empty($right) || gutentor_not_empty($bottom) || gutentor_not_empty($left)) ? $top . $type . ' ' . $right . $type . ' ' . $bottom . $type . ' ' . $left . $type : null);
         return $css;
     }
 }
@@ -470,6 +477,26 @@ if (!function_exists('gutentor_background_responsive_height')) {
 }
 
 /*
+ * Get Correct Font weight
+ * GetCorrectFontWeight
+ *
+ * @param  [string] $fontWeight
+ */
+if (!function_exists('GetCorrectFontWeight')) {
+
+	function GetCorrectFontWeight( $fontWeight ) {
+		if ( strpos( $fontWeight, 'italic' ) !== false ) {
+			$fontWeight = str_replace( "italic", "", $fontWeight );
+		}
+		if ( 'regular' == $fontWeight ) {
+			return $fontWeight = '400';
+		}
+
+		return $fontWeight;
+	}
+}
+
+/*
  * Gutentor Typography
  * gutentor_typography_options_css
  *
@@ -493,11 +520,11 @@ if (!function_exists('gutentor_typography_options_css')) {
 
         $typography_data = gutentor_generate_css('font-family', 'default' !== $font_type ? gutentor_font_family($typography, $font_type) : null);
         $typography_data .= gutentor_generate_css('font-size', ('default' !== $font_type && $font_size) ? $font_size . 'px' : null);
-        $typography_data .= gutentor_generate_css('font-weight', ('default' !== $font_type && $font_weight && 'default' !== $font_weight) ? $font_weight : null);
+	    $typography_data .= gutentor_generate_css('font-weight', ('default' !== $font_type && $font_weight && 'default' !== $font_weight) ? GetCorrectFontWeight($font_weight) : null);
         $typography_data .= gutentor_generate_css('text-transform', ('default' !== $font_type && $text_transform) ? $text_transform : null);
         $typography_data .= gutentor_generate_css('font-style', ('default' !== $font_type && $font_style && 'default' !== $font_style) ? $font_style : null);
         $typography_data .= gutentor_generate_css('text-decoration', ('default' !== $font_type && $text_decoration && 'default' !== $text_decoration) ? $text_decoration : null);
-        $typography_data .= gutentor_generate_css('line-height', ('default' !== $font_type && $line_height) ? $line_height : null);
+	    $typography_data  .= gutentor_generate_css('line-height', ('default' !== $font_type && $line_height) ? strval($line_height) : null);
         $typography_data .= gutentor_generate_css('letter-spacing', ('default' !== $font_type && $letter_spacing) ? $letter_spacing . 'px' : null);
 
         return $typography_data;
@@ -561,7 +588,7 @@ if (!function_exists('gutentor_typography_options_responsive_css')) {
         }
 
         $typography_data = gutentor_generate_css('font-size', ('default' !== $font_type && $font_size) ? $font_size . 'px' : null);
-        $typography_data .= gutentor_generate_css('line-height', ('default' !== $font_type && $line_height) ? $line_height : null);
+        $typography_data .= gutentor_generate_css('line-height', ('default' !== $font_type && $line_height) ? strval($line_height) : null);
         $typography_data .= gutentor_generate_css('letter-spacing', ('default' !== $font_type && $letter_spacing) ? $letter_spacing . 'px' : null);
 
         return $typography_data;

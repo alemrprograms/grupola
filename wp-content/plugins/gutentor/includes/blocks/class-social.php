@@ -46,6 +46,7 @@ if ( ! class_exists( 'Gutentor_Social' ) ) {
 			return $instance;
 
 		}
+
 	}
 }
 Gutentor_Social::get_instance()->run();

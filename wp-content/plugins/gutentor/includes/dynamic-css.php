@@ -59,7 +59,7 @@ if ( ! class_exists( 'Gutentor_Dynamic_CSS' )):
 		public function run() {
 			add_action( 'render_block', array( $this, 'remove_block_css' ), 9999,2 );
 			add_filter( 'wp_head', 	array( $this, 'dynamic_css' ),99 );
-			add_action( 'admin_bar_init', array( $this, 'add_edit_dynamic_css_file' ), 9999 );
+			add_action( 'save_post', array( $this, 'add_edit_dynamic_css_file' ), 9999,3 );
 			add_action( 'wp_enqueue_scripts', array( $this, 'dynamic_css_enqueue' ), 9999 );
 
 			add_filter( 'wp_head', 	array( $this, 'enqueue_google_fonts' ),100 );
@@ -75,7 +75,7 @@ if ( ! class_exists( 'Gutentor_Dynamic_CSS' )):
 		 *
 		 * @return void
 		 */
-		public function google_block_typography_prep($block){
+		public function google_block_typography_prep( $block ){
 			/*<<<<<<<<<=Google Typography Preparation*/
 			if ( is_array( $block ) && isset( $block['attrs'] ) ){
 				$typography_data = array_filter( $block['attrs'], function ($key) {
@@ -92,6 +92,30 @@ if ( ! class_exists( 'Gutentor_Dynamic_CSS' )):
 				}
 			}
 			/*Google Typography Preparation=>>>>>>>>*/
+		}
+
+		/**
+		 * Prepare $post object for google font url or typography
+		 *
+		 * @since    1.1.4
+		 * @access   public
+		 *
+		 * @return void
+		 */
+		public function post_google_typography_prep( $post ){
+			if( isset($post->ID) ) {
+				if ( has_blocks( $post->ID ) ) {
+					if ( isset( $post->post_content ) ) {
+						$blocks = parse_blocks( $post->post_content );
+						if ( is_array( $blocks ) && !empty( $blocks ) ) {
+							foreach ( $blocks as $i => $block ) {
+								/*google typography*/
+								gutentor_dynamic_css()->google_block_typography_prep($block);
+							}
+						}
+					}
+				}
+			}
 		}
 
 		/**
@@ -115,8 +139,7 @@ if ( ! class_exists( 'Gutentor_Dynamic_CSS' )):
 					return false;
 				}
 				foreach ( $blocks as $i => $block ) {
-					$this->google_block_typography_prep($block);
-
+					$this->google_block_typography_prep( $block );
 				}
 				$this->enqueue_google_fonts();
 			}
@@ -158,7 +181,6 @@ if ( ! class_exists( 'Gutentor_Dynamic_CSS' )):
 
 			/*font family wp_enqueue_style*/
 			$all_google_fonts = apply_filters('gutentor_enqueue_google_fonts', $this->all_google_fonts );
-
 
 			if ( empty( $all_google_fonts ) ) {
 				return false;
@@ -944,6 +966,36 @@ if ( ! class_exists( 'Gutentor_Dynamic_CSS' )):
 					'normal' => '',
 					'hover'  => '',
 				],
+				'blockImageBoxMargin' => [
+					'type' => 'px',
+					'desktopTop' => '',
+					'desktopRight' => '',
+					'desktopBottom' => '',
+					'desktopLeft' => '',
+					'tabletTop' => '',
+					'tabletRight' => '',
+					'tabletBottom' => '',
+					'tabletLeft' => '',
+					'mobileTop' => '',
+					'mobileRight' => '',
+					'mobileBottom' => '',
+					'mobileLeft' => '',
+				],
+				'blockImageBoxPadding' => [
+					'type' => 'px',
+					'desktopTop' => '',
+					'desktopRight' => '',
+					'desktopBottom' => '',
+					'desktopLeft' => '',
+					'tabletTop' => '',
+					'tabletRight' => '',
+					'tabletBottom' => '',
+					'tabletLeft' => '',
+					'mobileTop' => '',
+					'mobileRight' => '',
+					'mobileBottom' => '',
+					'mobileLeft' => '',
+				],
 				'blockFullImageEnable' => false,
 				'blockEnableImageBoxWidth' => false,
 				'blockImageBoxWidth' =>'',
@@ -1254,7 +1306,7 @@ if ( ! class_exists( 'Gutentor_Dynamic_CSS' )):
 		public function single_stylesheet( $this_post ) {
 
 			$get_style = '';
-			if(isset($this_post->ID)) {
+			if( isset($this_post->ID) ) {
 				if ( has_blocks( $this_post->ID ) ) {
 					if ( isset( $this_post->post_content ) ) {
 
@@ -1270,7 +1322,7 @@ if ( ! class_exists( 'Gutentor_Dynamic_CSS' )):
 		}
 
 		/**
-		 * css_prefix
+		 * css prefix
 		 *
 		 * @since      1.0.0
 		 * @package    Gutentor
@@ -1278,13 +1330,13 @@ if ( ! class_exists( 'Gutentor_Dynamic_CSS' )):
 		 *
 		 * @return mixed
 		 */
-		public function css_prefix() {
-			if( is_singular()){
-				global  $post;
-				if( has_blocks( $post->ID ) ){
-					return $post->ID;
-				}
-			}
+		public function css_prefix( $post = false ) {
+		    if( !$post ){
+                global  $post;
+            }
+            if( isset($post) && isset($post->ID) && has_blocks( $post->ID ) ){
+                return $post->ID;
+            }
 			return false;
 		}
 
@@ -1342,19 +1394,24 @@ if ( ! class_exists( 'Gutentor_Dynamic_CSS' )):
 			);
 		 * @return mixed
 		 */
-		public function get_singular_dynamic_css(){
+		public function get_singular_dynamic_css( $post = false ){
 
 			$getCSS = '';
-			if ( is_singular() ) {
+            if( $post ){
+                $getCSS = $this->single_stylesheet( $post );
+            }
+			elseif ( is_singular() ) {
 				global $post;
 				$getCSS = $this->single_stylesheet( $post );
-
 			}
 			elseif ( is_archive() || is_home() || is_search() ) {
 				global $wp_query;
-				foreach ( $wp_query as $post ) {
-					$getCSS .= $this->single_stylesheet( $post );
-				}
+				if( isset( $wp_query->posts)){
+                    foreach ( $wp_query->posts as $post ) {
+                        $getCSS .= $this->single_stylesheet( $post );
+                    }
+                }
+
 			}
 
 			$output = gutentor_dynamic_css()->minify_css( $getCSS );
@@ -1371,27 +1428,55 @@ if ( ! class_exists( 'Gutentor_Dynamic_CSS' )):
 		 */
 		public static function dynamic_css( ) {
 
-			$globalCSS = gutentor_dynamic_css()->get_global_dynamic_css();
-			$singularCSS = gutentor_dynamic_css()->get_singular_dynamic_css();
-			$combineCSS = '';
-			$cssPrefix = gutentor_dynamic_css()->css_prefix();
-
-
 			if ( 'default' == apply_filters( 'gutentor_dynamic_style_location', 'head' ) ) {
+				/*Default typography set for font url*/
+				if ( is_singular() ) {
+					global  $post;
+					gutentor_dynamic_css()->post_google_typography_prep($post);
+				}
+				elseif ( is_archive() || is_home() || is_search() ) {
+					global $wp_query;
+					if( isset( $wp_query->posts)){
+						foreach ( $wp_query->posts as $post ) {
+							gutentor_dynamic_css()->post_google_typography_prep($post);
+						}
+					}
+				}
+				/*always return*/
+				/*since we will not call anything from below codes*/
 				return;
 			}
 
+            $globalCSS = gutentor_dynamic_css()->get_global_dynamic_css();
+            $singularCSS = $combineCSS = '';
+
 			if ( 'file' == apply_filters( 'gutentor_dynamic_style_location', 'head' ) ) {
 
-				global $wp_customize;
-				$upload_dir = wp_upload_dir();
-
+                global $wp_customize;
+                $upload_dir = wp_upload_dir();
 				if ( isset( $wp_customize ) || ! file_exists( $upload_dir['basedir'] .'/gutentor/global.css' ) ) {
 					$combineCSS .= $globalCSS;
 				}
-				if ( isset( $wp_customize ) || ! file_exists( $upload_dir['basedir'] .'/gutentor/p-'.$cssPrefix.'.css'  ) ) {
-					$combineCSS .= $singularCSS;
-				}
+                if ( is_singular() ) {
+                    global  $post;
+                    $cssPrefix = gutentor_dynamic_css()->css_prefix( $post );
+                    if ( isset( $wp_customize ) || ! file_exists( $upload_dir['basedir'] .'/gutentor/p-'.$cssPrefix.'.css'  ) ) {
+                        $singularCSS = gutentor_dynamic_css()->get_singular_dynamic_css( $post );
+                        $combineCSS .= $singularCSS;
+                    }
+                }
+                elseif ( is_archive() || is_home() || is_search() ) {
+                    global $wp_query;
+                    if( isset( $wp_query->posts)){
+                        foreach ( $wp_query->posts as $post ) {
+                            $cssPrefix = gutentor_dynamic_css()->css_prefix( $post );
+                            if ( isset( $wp_customize ) || ! file_exists( $upload_dir['basedir'] .'/gutentor/p-'.$cssPrefix.'.css'  ) ) {
+                                $singularCSS = gutentor_dynamic_css()->get_singular_dynamic_css( $post );
+                                $combineCSS .= $singularCSS;
+                            }
+                        }
+                    }
+                }
 
 				// Render CSS in the head
 				if ( ! empty( $combineCSS ) ) {
@@ -1400,14 +1485,24 @@ if ( ! class_exists( 'Gutentor_Dynamic_CSS' )):
 
 			}
 			else {
+                if ( is_singular() ) {
+                    global  $post;
+                    $singularCSS .= gutentor_dynamic_css()->get_singular_dynamic_css( $post );
+                }
+                elseif ( is_archive() || is_home() || is_search() ) {
+                    global $wp_query;
+                    if( isset( $wp_query->posts)){
+                        foreach ( $wp_query->posts as $post ) {
+                            $singularCSS .= gutentor_dynamic_css()->get_singular_dynamic_css( $post );
+                        }
+                    }
+                }
 				$combineCSS = $globalCSS.$singularCSS;
 				// Render CSS in the head
 				if ( ! empty( $combineCSS ) ) {
 					echo "<!-- Gutentor Dynamic CSS -->\n<style type=\"text/css\" id='gutentor-dynamic-css'>\n" . wp_strip_all_tags( wp_kses_post( $combineCSS ) ) . "\n</style>";
 				}
-
 			}
-
 		}
 
 		/**
@@ -1418,17 +1513,18 @@ if ( ! class_exists( 'Gutentor_Dynamic_CSS' )):
 		 *
 		 * @return void
 		 */
-		public static function add_edit_dynamic_css_file( ) {
-
-			// If Custom File is not selected
-			if ( 'file' != apply_filters( 'gutentor_dynamic_style_location', 'head' ) ){
-				return false;
-			}
+		public static function add_edit_dynamic_css_file( $post_id, $post, $update ) {
+            if (
+                ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || /*Dealing with autosaves*/
+                ! current_user_can( 'edit_post', $post_id )/*Verifying access rights*/
+            ){
+                return;
+            }
 
 			$globalCSS = gutentor_dynamic_css()->get_global_dynamic_css();
-			$singularCSS = gutentor_dynamic_css()->get_singular_dynamic_css();
+			$singularCSS = gutentor_dynamic_css()->get_singular_dynamic_css( $post );
 
-			$cssPrefix = gutentor_dynamic_css()->css_prefix();
+			$cssPrefix = gutentor_dynamic_css()->css_prefix( $post );
 
 			// We will probably need to load this file
 			require_once( ABSPATH . 'wp-admin' . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'file.php' );
@@ -1465,9 +1561,6 @@ if ( ! class_exists( 'Gutentor_Dynamic_CSS' )):
 			$upload_dir = wp_upload_dir();
 
 			$globalCSS = gutentor_dynamic_css()->get_global_dynamic_css();
-			$singularCSS = gutentor_dynamic_css()->get_singular_dynamic_css();
-
-			$cssPrefix = gutentor_dynamic_css()->css_prefix();
 
 			// Render CSS from the custom file
 			if ( ! isset( $wp_customize ) ) {
@@ -1475,9 +1568,27 @@ if ( ! class_exists( 'Gutentor_Dynamic_CSS' )):
 				if ( !empty( $globalCSS ) && file_exists( $upload_dir['basedir'] .'/gutentor/global.css' ) ) {
 					wp_enqueue_style( 'gutentor-dynamic-common', trailingslashit( $upload_dir['baseurl'] ) . 'gutentor/global.css', false, null );
 				}
-				if ( !empty( $singularCSS ) && file_exists( $upload_dir['basedir'] .'/gutentor/p-'.$cssPrefix.'.css'  ) ) {
-					wp_enqueue_style( 'gutentor-dynamic', trailingslashit( $upload_dir['baseurl'] ) . 'gutentor/p-'.$cssPrefix.'.css', false, null );
-				}
+				if( is_singular()){
+                    global  $post;
+                    $cssPrefix = gutentor_dynamic_css()->css_prefix( $post );
+                    $singularCSS = gutentor_dynamic_css()->get_singular_dynamic_css( $post );
+                    if ( !empty( $singularCSS ) && file_exists( $upload_dir['basedir'] .'/gutentor/p-'.$cssPrefix.'.css'  ) ) {
+                        wp_enqueue_style( 'gutentor-dynamic', trailingslashit( $upload_dir['baseurl'] ) . 'gutentor/p-'.$cssPrefix.'.css', false, null );
+                    }
+                }
+
+                elseif ( is_archive() || is_home() || is_search() ) {
+                    global $wp_query;
+                    if( isset( $wp_query->posts)){
+                        foreach ( $wp_query->posts as $post ) {
+                            $cssPrefix = gutentor_dynamic_css()->css_prefix( $post );
+                            $singularCSS = gutentor_dynamic_css()->get_singular_dynamic_css( $post );
+                            if ( !empty( $singularCSS ) && file_exists( $upload_dir['basedir'] .'/gutentor/p-'.$cssPrefix.'.css'  ) ) {
+                                wp_enqueue_style( 'gutentor-dynamic', trailingslashit( $upload_dir['baseurl'] ) . 'gutentor/p-'.$cssPrefix.'.css', false, null );
+                            }
+                        }
+                    }
+                }
 			}
 		}
 

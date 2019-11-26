@@ -14,7 +14,7 @@ if ( ! defined( 'WPINC' ) ) {
  * @wordpress-plugin
  * Plugin Name:       Gutentor: WordPress Page Builder with Unlimited Possibilities to Design
  * Description:       The most advanced yet easy drag & drop block page builder. Create masterpiece, pixel perfect websites using modern WordPress way. Work with any theme, create any design.
- * Version:           1.1.3
+ * Version:           1.1.9
  * Author:            Gutentor
  * Author URI:        https://www.gutentor.com/
  * License:           GPL-2.0+
@@ -24,11 +24,15 @@ if ( ! defined( 'WPINC' ) ) {
  */
 
 /*Define Constants for this plugin*/
-define( 'GUTENTOR_VERSION', '1.1.3' );
+define( 'GUTENTOR_VERSION', '1.1.9' );
 define( 'GUTENTOR_PLUGIN_NAME', 'gutentor' );
 define( 'GUTENTOR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GUTENTOR_URL', plugin_dir_url( __FILE__ ) );
 define( 'GUTENTOR_SCRIPT_PREFIX', ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min' );
+
+/*Gutentor Template Library is IMPORTANT*/
+define( 'GUTENTOR_RECOMMENDED_TEMPLATE_LIBRARY_SLUG', 'gutentor-template-library' );
+define( 'GUTENTOR_RECOMMENDED_TEMPLATE_LIBRARY_PLUGIN', GUTENTOR_RECOMMENDED_TEMPLATE_LIBRARY_SLUG.'/'.GUTENTOR_RECOMMENDED_TEMPLATE_LIBRARY_SLUG.'.php' );
 
 /**
  * The code that runs during plugin activation.

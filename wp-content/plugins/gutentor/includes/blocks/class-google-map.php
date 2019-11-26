@@ -210,6 +210,14 @@ if ( ! class_exists( 'Gutentor_Google_Map' ) ) {
 		 * @return string
 		 */
 		public function render_callback( $attributes, $content ) {
+			$google_style = '';
+			if(gutentor_get_options('gutentor_dynamic_style_location')){
+				$gutentor_dynamic_style_location =  gutentor_get_options('gutentor_dynamic_style_location');
+				if('default' == $gutentor_dynamic_style_location){
+					$google_style .= gutentor_dynamic_css()->get_block_common_css($attributes);
+				}
+
+			}
 			$id      = isset($attributes['id']) ? $attributes['id'] : 'gutentor-google-map-' . rand(10, 100);
 			$blockID = isset($attributes['blockID']) ? $attributes['blockID'] : '';
 			$class   = 'gutentor-google-map';
@@ -225,6 +233,7 @@ if ( ! class_exists( 'Gutentor_Google_Map' ) ) {
 			$blockItemsWrapAnimation = isset($attributes['blockItemsWrapAnimation']) ? $attributes['blockItemsWrapAnimation'] : '';
 
 			$output         = '<'.$tag.' class="'.apply_filters('gutentor_edit_section_class', 'gutentor-section gutentor-google-map '.$align, $attributes).'" id="section-' . esc_attr($blockID) . '"   '.GutentorAnimationOptionsDataAttr($blockComponentAnimation).'>' . "\n";
+			$output         .= '<style>'.$google_style.'</style>';
 			$output         .= apply_filters( 'gutentor_save_before_container', '', $attributes );
 			$output         .= '<div class="grid-container">' . "\n";
 			$output         .= apply_filters('gutentor_save_before_block_items', '', $attributes);

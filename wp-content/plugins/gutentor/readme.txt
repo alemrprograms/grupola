@@ -6,7 +6,7 @@ Tags: blocks, block, block editor, drag-and-drop, landing page, website builder,
 Requires at least: 5.0
 Tested up to: 5.3
 Requires PHP: 5.6.20
-Stable tag: 1.1.3
+Stable tag: 1.1.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,7 +38,7 @@ Gutentor is a lightweight WordPress plugin, it is optimized for performance. Inl
 * Video background Options
 * Inline, Internal or External CSS files for dynamic CSS
 
-While you use Template Library features of Gutentor, Gutentor fetches screenshots, images and templates(demo) JSON files from [Gutentor Demo Library](https://www.demo.gutentor.com/). This helps you to import templates with a single click. You must accept [terms](https://www.gutentor.com/terms/) and [privacy](https://www.gutentor.com/privacy/) to use Gutentor Template Library Features.
+While you use Template Library features of Gutentor, Gutentor fetches screenshots, images and templates(demo) JSON files from [Gutentor Demo Library](https://www.demo.gutentor.com/) and after your insert template library images link are from the external site. You have to change the images after you import templates and blocks. This helps you to import templates with a single click. You must accept [terms](https://www.gutentor.com/terms/) and [privacy](https://www.gutentor.com/privacy/) to use Gutentor Template Library Features.
 
 === ADVANCED PAGE BUILDING BLOCKS INSIDE GUTENTOR ===
 
@@ -174,6 +174,41 @@ Yes We provide Free Support via WordPress Support Forum https://wordpress.org/su
 9. Gutentor Blocks: Gutentor provide complete site-building blocks and elements
 
 == Changelog ==
+
+= 1.1.9 - 2019-11-20 =
+* Fixed : Template Import
+
+= 1.1.8 - 2019-11-20 =
+* Updated : Editor UI
+* Updated : Advanced List Block
+* Updated : Image Slider Block
+* Updated : 100+ Blocks and Template Library
+* Added : Support for Gutentor Template Library
+
+= 1.1.7 - 2019-11-16 =
+* Fixed : Image Slider Block Background Image
+
+= 1.1.6 - 2019-11-16 =
+* Updated : Image Slider Block on 5.3
+* Updated : Advanced List on 5.3
+
+= 1.1.5 - 2019-11-15 =
+* Added : Button Block
+* Added : Remove Column Space Option
+* Added : Basic Template Library
+* Added : Twenty Twenty CSS
+* Added : Twenty Ninteen CSS
+* Fixed : Blog Block on WordPress 5.3
+* Fixed : Margin Padding CSS Options
+* Updated : Depreciated editor function
+
+= 1.1.4 - 2019-11-10 =
+* Fixed : Dynamic CSS
+* Fixed : Image Box block design issue
+* Fixed : Blog Block Dynamic CSS on default
+* Fixed : Google Map Block Dynamic CSS on default
+* Fixed : Blog Block list style
+* Updated : Other minor changes
 
 = 1.1.3 - 2019-11-01 =
 * Updated : Template library url changed to gutentor

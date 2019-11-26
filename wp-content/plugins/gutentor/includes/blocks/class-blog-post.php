@@ -976,6 +976,14 @@ if ( ! class_exists( 'Gutentor_Blog_Post' ) ) {
 		 * @return string
 		 */
 		public function render_callback( $attributes, $content ) {
+			$blog_style = '';
+			if(gutentor_get_options('gutentor_dynamic_style_location')){
+				$gutentor_dynamic_style_location =  gutentor_get_options('gutentor_dynamic_style_location');
+				if('default' == $gutentor_dynamic_style_location){
+					$blog_style .= gutentor_dynamic_css()->get_block_common_css($attributes);
+				}
+
+			}
 
 			$blockID = isset($attributes['blockID']) ? $attributes['blockID'] : '';
 			$output = '';
@@ -998,6 +1006,7 @@ if ( ! class_exists( 'Gutentor_Blog_Post' ) ) {
 
 			if ($the_query->have_posts()) :
 				$output  .= '<'.$tag.' class="'.apply_filters('gutentor_edit_section_class', 'gutentor-section gutentor-blog-post-wrapper '.gutentor_concat_space($template,$align).'', $attributes).'" id="section-' . esc_attr($blockID) . '" '.GutentorAnimationOptionsDataAttr($blockComponentAnimation).'>' . "\n";
+				$output .= '<style>'.$blog_style.'</style>';
 				$output .= apply_filters( 'gutentor_save_before_container', '', $attributes );
 				$output .= '<div class="grid-container">';
 				$output .= apply_filters('gutentor_save_before_block_items', '', $attributes);

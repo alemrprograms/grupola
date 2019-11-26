@@ -44,7 +44,6 @@ if ( ! class_exists( 'Gutentor_About_Block' ) ) {
 
 			// Always return the instance
 			return $instance;
-
 		}
 	}
 }
